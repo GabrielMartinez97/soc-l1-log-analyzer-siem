@@ -1,0 +1,21 @@
+Nov 08 08:12:04 prod-bastion-01 sshd[1024]: Accepted publickey for gabriel from 10.10.20.15 port 51234 ssh2: RSA SHA256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b
+Nov 08 08:12:04 prod-bastion-01 sshd[1024]: pam_unix(sshd:session): session opened for user gabriel(uid=1000) by (uid=0)
+Nov 08 08:15:01 prod-bastion-01 CRON[1102]: pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)
+Nov 08 08:15:02 prod-bastion-01 CRON[1102]: pam_unix(cron:session): session closed for user root
+Nov 08 08:20:11 prod-bastion-01 sshd[1210]: Failed password for invalid user admin from 185.220.101.45 port 44101 ssh2
+Nov 08 08:20:13 prod-bastion-01 sshd[1212]: Failed password for root from 185.220.101.45 port 44102 ssh2
+Nov 08 08:20:15 prod-bastion-01 sshd[1215]: Failed password for root from 185.220.101.45 port 44103 ssh2
+Nov 08 08:20:17 prod-bastion-01 sshd[1218]: Failed password for invalid user ubuntu from 185.220.101.45 port 44104 ssh2
+Nov 08 08:20:19 prod-bastion-01 sshd[1221]: Failed password for invalid user oracle from 185.220.101.45 port 44105 ssh2
+Nov 08 08:20:21 prod-bastion-01 sshd[1224]: Failed password for invalid user postgres from 185.220.101.45 port 44106 ssh2
+Nov 08 08:20:23 prod-bastion-01 sshd[1227]: Failed password for backup_svc from 185.220.101.45 port 44107 ssh2
+Nov 08 08:20:25 prod-bastion-01 sshd[1230]: Failed password for backup_svc from 185.220.101.45 port 44108 ssh2
+Nov 08 08:20:28 prod-bastion-01 sshd[1235]: Accepted password for backup_svc from 185.220.101.45 port 44109 ssh2
+Nov 08 08:20:28 prod-bastion-01 sshd[1235]: pam_unix(sshd:session): session opened for user backup_svc(uid=1004) by (uid=0)
+Nov 08 08:31:10 prod-bastion-01 sshd[1401]: Failed password for invalid user guest from 45.155.205.109 port 59011 ssh2
+Nov 08 08:31:14 prod-bastion-01 sshd[1404]: Failed password for invalid user test from 45.155.205.109 port 59012 ssh2
+Nov 08 08:31:18 prod-bastion-01 sshd[1408]: Failed password for invalid user deploy from 45.155.205.109 port 59013 ssh2
+Nov 08 08:31:22 prod-bastion-01 sshd[1412]: Failed password for invalid user devops from 45.155.205.109 port 59014 ssh2
+Nov 08 08:31:26 prod-bastion-01 sshd[1416]: Failed password for invalid user support from 45.155.205.109 port 59015 ssh2
+Nov 08 08:31:30 prod-bastion-01 sshd[1420]: Failed password for invalid user jenkins from 45.155.205.109 port 59016 ssh2
+Nov 08 08:45:00 prod-bastion-01 sshd[1550]: Accepted publickey for devops_lead from 10.10.20.22 port 55100 ssh2: ED25519 SHA256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd
