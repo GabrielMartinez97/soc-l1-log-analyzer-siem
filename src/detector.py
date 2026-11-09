@@ -210,7 +210,33 @@ def detect_web_threats(events: List[WebAccessEvent]) -> List[SecurityAlert]:
             )
             continue
 
-        # 2. Detección de Path Traversal / LFI (SOC-WEB-003)
+        # 2. Detección de OS Command Injection / RCE (SOC-WEB-005)
+        if CMD_INJECTION_REGEX.search(event.decoded_uri):
+            alerts.append(
+                SecurityAlert(
+                    rule_id="SOC-WEB-005",
+                    title="Intento de Ejecución Remota de Comandos (OS Command Injection)",
+                    severity="CRITICAL",
+                    mitre_tactic="Execution",
+                    mitre_technique_id="T1059.004",
+                    mitre_technique_name="Command and Scripting Interpreter: Unix Shell",
+                    source_ip=event.source_ip,
+                    target_Asset_or_uri=event.decoded_uri,
+                    outcome=outcome,
+                    description=(
+                        f"La IP {event.source_ip} intentó inyectar comandos de sistema y establecer una "
+                        f"Reverse Shell con netcat ('{event.decoded_uri}'). Código HTTP: {event.status_code}."
+                    ),
+                    evidence_logs=[event.raw_log],
+                    recommended_action=(
+                        "Verificar conexiones salientes hacia la IP atacante en el puerto 4444 y "
+                        "aislar el servidor web si existe proceso hijo de shell activo."
+                    ),
+                )
+            )
+            continue
+
+        # 3. Detección de Path Traversal / LFI (SOC-WEB-003)
         if PATH_TRAVERSAL_REGEX.search(event.decoded_uri):
             severity = "CRITICAL" if is_http_200 else "HIGH"
             alerts.append(
@@ -240,7 +266,7 @@ def detect_web_threats(events: List[WebAccessEvent]) -> List[SecurityAlert]:
             )
             continue
 
-        # 3. Detección de Cross-Site Scripting XSS (SOC-WEB-004)
+        # 4. Detección de Cross-Site Scripting XSS (SOC-WEB-004)
         if XSS_REGEX.search(event.decoded_uri):
             alerts.append(
                 SecurityAlert(
@@ -260,32 +286,6 @@ def detect_web_threats(events: List[WebAccessEvent]) -> List[SecurityAlert]:
                     evidence_logs=[event.raw_log],
                     recommended_action=(
                         "Bloquear dominio de comando y control (C2) referenciado en el script y sanitizar entrada."
-                    ),
-                )
-            )
-            continue
-
-        # 4. Detección de OS Command Injection / RCE (SOC-WEB-005)
-        if CMD_INJECTION_REGEX.search(event.decoded_uri):
-            alerts.append(
-                SecurityAlert(
-                    rule_id="SOC-WEB-005",
-                    title="Intento de Ejecución Remota de Comandos (OS Command Injection)",
-                    severity="CRITICAL",
-                    mitre_tactic="Execution",
-                    mitre_technique_id="T1059.004",
-                    mitre_technique_name="Command and Scripting Interpreter: Unix Shell",
-                    source_ip=event.source_ip,
-                    target_Asset_or_uri=event.decoded_uri,
-                    outcome=outcome,
-                    description=(
-                        f"La IP {event.source_ip} intentó inyectar comandos de sistema y establecer una "
-                        f"Reverse Shell con netcat ('{event.decoded_uri}'). Código HTTP: {event.status_code}."
-                    ),
-                    evidence_logs=[event.raw_log],
-                    recommended_action=(
-                        "Verificar conexiones salientes hacia la IP atacante en el puerto 4444 y "
-                        "aislar el servidor web si existe proceso hijo de shell activo."
                     ),
                 )
             )
