@@ -59,11 +59,55 @@ soc-l1-log-analyzer-siem/
 │   └── reporter.py             # Defanging de IOCs y generador de reporte de incidente
 ├── playbooks/
 │   └── SOC_L1_Playbook.md      # Guía operativa de respuesta y escalado para el analista
-├── reports/                    # Reportes de triaje generados automáticamente (Markdown/JSON)
-├── tests/                      # Pruebas unitarias de parsers y reglas de detección
+├── reports/
+│   ├── SOC_L1_Incident_Report.md # Reporte de triaje generado automáticamente
+│   └── soc_alerts.json         # Alertas exportadas en formato JSON (integración SOAR)
+├── tests/
+│   └── test_siem.py            # Pruebas unitarias de parsers, reglas y defanging
 ├── main.py                     # CLI principal de ejecución del Mini-SIEM
 └── README.md
 ```
+
+---
+
+## 🚀 Ejecución Rápida (CLI y Pruebas)
+
+1. **Ejecutar el análisis completo de logs y generar el reporte de incidente:**
+   ```bash
+   python main.py
+   ```
+   **Salida en consola:**
+   ```text
+   ==============================================================================
+     SOC L1 MINI-SIEM & LOG TRIAGE ENGINE — MITRE ATT&CK CORRELATOR
+   ==============================================================================
+   [+] Eventos SSH normalizados (logs\linux_auth.log): 17
+   [+] Eventos Web normalizados (logs\web_access.log): 13
+   ------------------------------------------------------------------------------
+   [!] Total de Alertas de Seguridad Detectadas: 10
+
+   SEV        | RULE ID      | MITRE      | IOC (DEFANGED)     | TITLE
+   -----------------------------------------------------------------------------------------------
+   CRITICAL   | SOC-SSH-003  | T1078      | 185.220.101[.]45   | COMPROMISO DE CUENTA: Login SSH Exitoso tras Fuerza Bruta
+   CRITICAL   | SOC-WEB-002  | T1190      | 198.51.100[.]77    | Ataque de SQL Injection (SQLi) Detectado
+   CRITICAL   | SOC-WEB-002  | T1190      | 198.51.100[.]77    | Ataque de SQL Injection (SQLi) Detectado
+   CRITICAL   | SOC-WEB-003  | T1083      | 198.51.100[.]77    | Intento de Path Traversal / Local File Inclusion (LFI)
+   CRITICAL   | SOC-WEB-005  | T1059.004  | 203.0.113[.]88     | Intento de Ejecución Remota de Comandos (OS Command Injection)
+   HIGH       | SOC-SSH-002  | T1110.003  | 45.155.205[.]109   | SSH Password Spraying Detectado
+   HIGH       | SOC-WEB-003  | T1083      | 198.51.100[.]77    | Intento de Path Traversal / Local File Inclusion (LFI)
+   HIGH       | SOC-WEB-004  | T1189      | 203.0.113[.]88     | Ataque Cross-Site Scripting (XSS) Detectado
+   MEDIUM     | SOC-SSH-001  | T1110.001  | 185.220.101[.]45   | Ataque de Fuerza Bruta SSH
+   MEDIUM     | SOC-WEB-001  | T1595.002  | 91.240.118[.]222   | Escaneo Automatizado de Vulnerabilidades (Nikto / Nmap)
+   ```
+
+2. **Ejecutar la suite de pruebas unitarias:**
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
+
+3. **Consultar artefactos operativos:**
+   * 📄 [Ver Reporte de Triaje SOC L1 Generado](reports/SOC_L1_Incident_Report.md)
+   * 📘 [Ver Playbook Operativo SOC L1 (Red + Host + Identidad)](playbooks/SOC_L1_Playbook.md)
 
 ---
 
